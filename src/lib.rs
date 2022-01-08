@@ -11,12 +11,13 @@ pub struct StreakData {
 }
 /// login() returns a mutated client with login cookies set.
 ///
-/// it takes in a username, password, and a login endpoint.
+/// it takes in a `username: &String`, `password: &String`, and a login `endpoint: &str`.
 pub async fn login(
     username: &String,
     password: &String,
     endpoint: &str,
 ) -> Result<Client, Box<dyn Error>> {
+    
     // DEFINE DEFAULT HEADER VALUES.
     let content_type = String::from("application/json");
     let accept = String::from("text/plain");
@@ -49,8 +50,6 @@ pub async fn login(
     println!("done.\n");
 
     let response_headers = resp.headers();
-    //println!("\n\nRESPONSE HEADERS\n\n{:#?}",response_headers);
-    //let mut response_headers_mut = response_headers.clone();
 
     // form Auth header with values
     login_headers.insert(
@@ -61,10 +60,11 @@ pub async fn login(
     Ok(client.clone())
 }
 
-/// fetches duolingo data for tracked users in `config.json`.
-///
-/// maps users as a KVP (user: String, and streak: u32) and then
+/// fetches duolingo data for a vector of usernames
+/// , `&Vec<String>` with a given reqwest `Client`
 pub async fn fetch(users: &Vec<String>, client: Client) -> Result<StreakData, Box<dyn Error>> {
+    
+    //maps users as a KVP (user: String, and streak: u16)
     let mut user_map: HashMap<String, u16> = HashMap::new();
 
     // loop through users in config and fetch profile responses (SLOW :<)
@@ -83,11 +83,12 @@ pub async fn fetch(users: &Vec<String>, client: Client) -> Result<StreakData, Bo
 
         // convert the json resp into a Value for easy map insertion
         let user_val_r: Value = serde_json::from_str(&resp)?;
-        // grab the little fucker that we went through this porocess
+        // grab the little fucker that we went through this process
         // for. 0/10 not worth the hassle, duolingo. i hope you push
         // a break to prod or something.
         let user_val: String = (user_val_r["site_streak"].clone()).to_string();
 
+        
         user_map.insert(user.clone(), user_val.parse()?);
     }
 
