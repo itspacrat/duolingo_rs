@@ -1,7 +1,9 @@
 use reqwest::{header::HeaderMap, Response, Client};
 use serde::{Deserialize, Serialize};
-use serde_json;
-use std::{collections::HashMap, error::Error, path::Path};
+use serde_json::{Value};
+use std::{collections::HashMap, error::Error, path::Path,
+    fs::{File,read_to_string}
+};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct StreakData {
