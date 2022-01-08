@@ -113,7 +113,7 @@ pub fn check(old_path: &str, new_data: &StreakData) -> Result<(), Box<dyn std::e
     } else {
         // Read streak data file to string
         let previous_r: &str = &(read_to_string(old_path)?); // > Value
-        let mut previous_h: HashMap<String, u16> = serde_json::from_str(previous_r)?;
+        let previous_h: HashMap<String, u16> = serde_json::from_str(previous_r)?;
         println!("OLD\n{:#?}\n", &previous_h);
         println!("NEW\n{:#?}\n", &new_data);
 
