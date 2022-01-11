@@ -1,23 +1,21 @@
-use reqwest::{header::HeaderMap, Response, Client};
+use reqwest::{header::HeaderMap, Client, Response};
 use serde::{Deserialize, Serialize};
-use serde_json::{Value};
-use std::{collections::HashMap, error::Error, path::Path,
-    fs::{File,read_to_string}
+use serde_json::{from_str, from_value, Value};
+use std::{
+    collections::HashMap,
+    error::Error,
+    fs::{read_to_string, File},
+    path::Path,
 };
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct StreakData {
-    pub users: Option<HashMap<String, u16>>,
-}
-/// login() returns a mutated client with login cookies set.
+/// `login()` returns a mutated client with set duolingo login headers and cookies.
 ///
 /// it takes in a `username: &String`, `password: &String`, and a login `endpoint: &str`.
 pub async fn login(
-    username: &String,
-    password: &String,
+    username: String,
+    password: String,
     endpoint: &str,
 ) -> Result<Client, Box<dyn Error>> {
-    
     // DEFINE DEFAULT HEADER VALUES.
     let content_type = String::from("application/json");
     let accept = String::from("text/plain");
@@ -61,9 +59,25 @@ pub async fn login(
 }
 
 /// fetches duolingo data for a vector of usernames
-/// , `&Vec<String>` with a given reqwest `Client`
-pub async fn fetch(users: &Vec<String>, client: Client) -> Result<StreakData, Box<dyn Error>> {
-    
+/// , `&Vec<String>`, with a given reqwest `Client`
+///
+/// #### example:
+/// ```
+/// use duolingo_rs::fetch;
+/// use reqwest::Client;
+///
+/// fn main() {
+///     let login_client = login(my_username,my_password,login_endpoint);
+///     let userlist: Vec<String>
+///
+///     //returns a hashmap with a username and a streak
+///     let new_data: HashMap<String,u16> = fetch(&userlist,login_client).await?;
+/// }
+/// ```
+pub async fn fetch(
+    users: &Vec<String>,
+    client: Client,
+) -> Result<HashMap<String, u16>, Box<dyn Error>> {
     //maps users as a KVP (user: String, and streak: u16)
     let mut user_map: HashMap<String, u16> = HashMap::new();
 
@@ -88,39 +102,44 @@ pub async fn fetch(users: &Vec<String>, client: Client) -> Result<StreakData, Bo
         // a break to prod or something.
         let user_val: String = (user_val_r["site_streak"].clone()).to_string();
 
-        
         user_map.insert(user.clone(), user_val.parse()?);
     }
 
-    let streak_data: StreakData = StreakData {
+    /*let streak_data: StreakData = StreakData {
         users: Some(user_map),
-    };
+    };*/
 
-    Ok(streak_data)
+    Ok(user_map)
 }
 
 /// test if a streak is greater than, equal to,
 /// or less than the previous streak.
-pub fn check(old_path: &str, new_data: &StreakData) -> Result<(), Box<dyn std::error::Error>> {
-    
-    if !Path::new(&old_path).exists() {
-        File::create(old_path)?;
-        let previous_r: &str = &(read_to_string(old_path)?); // > Value
-        let mut previous_h: HashMap<String, u16> = serde_json::from_str(previous_r)?;
-        println!("OLD\n{:#?}\n", &previous_h);
-        println!("NEW\n{:#?}\n", &new_data);
-        // if not, cry about nonexistent path
-        //println!("no old data to check against. did the fetch go through...?");
-    } else {
-        // Read streak data file to string
-        let previous_r: &str = &(read_to_string(old_path)?); // > Value
-        let previous_h: HashMap<String, u16> = serde_json::from_str(previous_r)?;
-        println!("OLD\n{:#?}\n", &previous_h);
-        println!("NEW\n{:#?}\n", &new_data);
+pub fn check(old_path: &str, new_data: Value) -> Result<(), Box<dyn Error>> {
+    let previous_r: HashMap<String, u16> = from_str(&(read_to_string(old_path)?))?; // > Value
+    let new_r: HashMap<String, u16> = from_value(new_data)?;
 
-        //update_data()
+    /* DEBUG STATEMENTS */
+    println!("OLD\n{:#?}\n", &previous_r);
+    println!("NEW\n{:#?}\n", &new_r);
 
-    };
+    for (old_key, old_streak) in previous_r.clone() {
+        for (new_key, new_streak) in new_r.clone() {
+            if new_key == old_key {
+                if new_streak > old_streak {
+                    //extend streak for user
+                    println!("streak extension: {} - {}", &new_key, &new_streak)
+                } else if new_streak < old_streak {
+                    // if new data is less (lost streak)
+                    println!("streak loss: {} - {}", &new_key, &old_streak)
+                } else {
+                    // if they are neither greater nor less than eachother
+                    println!("no change: {}",&new_key)
+                }
+            } else {
+                // Don't do shit because you're making an apple to oranges comparison
+            }
+        }
+    }
 
     Ok(())
 }
