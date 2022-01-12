@@ -8,6 +8,7 @@ use std::{
     path::Path,
 };
 
+//
 /// `login()` returns a mutated client with set duolingo login headers and cookies.
 ///
 /// it takes in a `username: &String`, `password: &String`, and a login `endpoint: &str`.
@@ -58,12 +59,14 @@ pub async fn login(
     Ok(client.clone())
 }
 
+//TODO:  impliment fetch_streak (fetch_Streak_map() but for single user)
+
 /// fetches duolingo data for a vector of usernames
 /// , `&Vec<String>`, with a given reqwest `Client`
 ///
 /// #### example:
 /// ```
-/// use duolingo_rs::fetch;
+/// use duolingo_rs::{login,fetch};
 /// use reqwest::Client;
 ///
 /// fn main() {
@@ -71,17 +74,15 @@ pub async fn login(
 ///     let userlist: Vec<String>
 ///
 ///     //returns a hashmap with a username and a streak
-///     let new_data: HashMap<String,u16> = fetch(&userlist,login_client).await?;
+///     let new_data: HashMap<String,u16> = fetch_streak_map(&userlist,login_client).await?;
 /// }
 /// ```
-pub async fn fetch(
-    users: &Vec<String>,
+pub async fn fetch_streak_map(
+    users: Vec<String>,
     client: Client,
 ) -> Result<HashMap<String, u16>, Box<dyn Error>> {
     //maps users as a KVP (user: String, and streak: u16)
     let mut user_map: HashMap<String, u16> = HashMap::new();
-
-    // loop through users in config and fetch profile responses (SLOW :<)
     for user in users {
         println!("    fetching data for user {}", &user);
 
@@ -104,42 +105,5 @@ pub async fn fetch(
 
         user_map.insert(user.clone(), user_val.parse()?);
     }
-
-    /*let streak_data: StreakData = StreakData {
-        users: Some(user_map),
-    };*/
-
     Ok(user_map)
-}
-
-/// test if a streak is greater than, equal to,
-/// or less than the previous streak.
-pub fn check(old_path: &str, new_data: Value) -> Result<(), Box<dyn Error>> {
-    let previous_r: HashMap<String, u16> = from_str(&(read_to_string(old_path)?))?; // > Value
-    let new_r: HashMap<String, u16> = from_value(new_data)?;
-
-    /* DEBUG STATEMENTS */
-    println!("OLD\n{:#?}\n", &previous_r);
-    println!("NEW\n{:#?}\n", &new_r);
-
-    for (old_key, old_streak) in previous_r.clone() {
-        for (new_key, new_streak) in new_r.clone() {
-            if new_key == old_key {
-                if new_streak > old_streak {
-                    //extend streak for user
-                    println!("streak extension: {} - {}", &new_key, &new_streak)
-                } else if new_streak < old_streak {
-                    // if new data is less (lost streak)
-                    println!("streak loss: {} - {}", &new_key, &old_streak)
-                } else {
-                    // if they are neither greater nor less than eachother
-                    println!("no change: {}",&new_key)
-                }
-            } else {
-                // Don't do shit because you're making an apple to oranges comparison
-            }
-        }
-    }
-
-    Ok(())
 }
