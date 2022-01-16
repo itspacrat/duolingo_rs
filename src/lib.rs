@@ -1,10 +1,7 @@
 use reqwest::{header::HeaderMap, Client, Response};
 //use serde::{Deserialize, Serialize};
-use serde_json::{Value};
-use std::{
-    collections::HashMap,
-    error::Error,
-};
+use serde_json::Value;
+use std::{collections::HashMap, error::Error};
 
 //
 /// `login()` returns a mutated client with set duolingo login headers and cookies.
@@ -15,6 +12,7 @@ pub async fn login(
     password: String,
     endpoint: &str,
 ) -> Result<Client, Box<dyn Error>> {
+    //
     // DEFINE DEFAULT HEADER VALUES.
     let content_type = String::from("application/json");
     let accept = String::from("text/plain");
@@ -24,6 +22,7 @@ pub async fn login(
     let mut login_json = HashMap::new();
     let mut login_headers = HeaderMap::new();
 
+    //
     // ADD LOGIN HEADERS TO NEW CLIENT.
     println!("inserting login body...");
     login_json.insert("login", username);
@@ -48,6 +47,7 @@ pub async fn login(
 
     let response_headers = resp.headers();
 
+    //
     // form Auth header with values
     login_headers.insert(
         "Authorization",
@@ -59,19 +59,34 @@ pub async fn login(
 
 //TODO:  impliment fetch_streak (fetch_Streak_map() but for single user)
 
+//
 /// fetches duolingo data for a vector of usernames
 /// , `&Vec<String>`, with a given reqwest `Client`
 ///
 /// #### example:
 /// ```
-/// use duolingo_rs::{login,fetch};
+/// use duolingo_rs::{login,fetch_streak_map};
 /// use reqwest::Client;
 ///
 /// fn main() {
-///     let login_client = login(my_username,my_password,login_endpoint);
-///     let userlist: Vec<String>
 ///
-///     //returns a hashmap with a username and a streak
+///     //
+///     // please for the love of God don't hardcode your
+///     // password in any app you make with this :(
+///     let my_username: String = String::from("user0");
+///     let my_password: String = String::from("unsafePa$5w0rd1234"); // grab this from a var or something
+///
+///     //
+///     // use reqwest's Client to log in and set session cookies
+///     let login_client = login(my_username,my_password,login_endpoint);
+///     
+///     //
+///     // have your Vec ready!!!
+///     let mut userlist: Vec<String> = Vec::new();
+///     userlist.push(String::from("user1"));
+///     userlist.push(String::from("user2"));
+///
+///     //return a hashmap with a username and a streak
 ///     let new_data: HashMap<String,u16> = fetch_streak_map(&userlist,login_client).await?;
 /// }
 /// ```
