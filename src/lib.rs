@@ -7,6 +7,27 @@ use std::{collections::HashMap, error::Error};
 /// `login()` returns a mutated client with set duolingo login headers and cookies.
 ///
 /// it takes in a `username: &String`, `password: &String`, and a login `endpoint: &str`.
+/// 
+/// #### example:
+/// ```
+/// use duolingo_rs::{login};
+/// use reqwest::Client;
+///
+/// fn main() {
+///
+///     //
+///     // please for the love of God don't hardcode your
+///     // password in any app you make with this :(
+///     let my_username: String = String::from("user0");
+///     let my_password: String = String::from("unsafePa$5w0rd1234"); // grab this from a var or something
+///
+///     //
+///     // use reqwest's Client to log in and set session cookies
+///     let login_client = login(my_username,my_password,login_endpoint)?;
+///    
+///     // pass off the client anywhere you want now!
+/// }
+/// ```
 pub async fn login(
     username: String,
     password: String,
@@ -78,7 +99,7 @@ pub async fn login(
 ///
 ///     //
 ///     // use reqwest's Client to log in and set session cookies
-///     let login_client = login(my_username,my_password,login_endpoint);
+///     let login_client = login(my_username,my_password,login_endpoint)?;
 ///     
 ///     //
 ///     // have your Vec ready!!!
