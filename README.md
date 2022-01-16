@@ -13,3 +13,6 @@ duolingo_rs *can* currently:
   - current language
   - current xp
 - clientside data crunching & comparison
+
+## documentation
+[docs.rs](https://docs.rs/duolingo_rs/latest/duolingo_rs/fn.fetch_streak_map.html)
