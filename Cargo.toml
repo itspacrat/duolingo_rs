@@ -9,7 +9,7 @@ homepage = "https://github.com/parkcitymedia/duolingo_rs"
 documentation = "https://github.com/parkcitymedia/duolingo_rs"
 repository = "https://github.com/parkcitymedia/duolingo_rs"
 readme = "README.md"
-keywords = ["language","api",]
+keywords = ["language","api","wrapper","third-party"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
