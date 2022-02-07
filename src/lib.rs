@@ -2,6 +2,8 @@ use reqwest::{header::HeaderMap, Client, Response};
 use serde_json::Value;
 use std::{collections::HashMap, error::Error};
 
+// now uses staging branch
+
 //
 /// `login()` returns a mutated client with set duolingo login headers and cookies.
 ///
