@@ -1,5 +1,4 @@
 use reqwest::{header::HeaderMap, Client, Response};
-//use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::{collections::HashMap, error::Error};
 
@@ -16,7 +15,7 @@ use std::{collections::HashMap, error::Error};
 /// fn main() {
 ///
 ///     //
-///     // please for the love of God don't hardcode your
+///     // please FOR THE LOVE OF GOD don't hardcode your
 ///     // password in any app you make with this :(
 ///     let my_username: String = String::from("user0");
 ///     let my_password: String = String::from("unsafePa$5w0rd1234"); // grab this from a var or something
@@ -92,13 +91,15 @@ pub async fn login(
 /// fn main() {
 ///
 ///     //
-///     // please for the love of God don't hardcode your
-///     // password in any app you make with this :(
+///     // please FOR THE LOVE OF GOD don't hardcode 
+///     // your password in any app you make with this.
 ///     let my_username: String = String::from("user0");
-///     let my_password: String = String::from("unsafePa$5w0rd1234"); // grab this from a var or something
+///     let my_password: String = 
+///         String::from("unsafePa$5w0rd1234"); // grab this from a var or something
 ///
 ///     //
-///     // use reqwest's Client to log in and set session cookies
+///     // use reqwest's Client to log in and set
+///     // session cookies
 ///     let login_client = login(my_username,my_password,login_endpoint)?;
 ///     
 ///     //
