@@ -12,7 +12,7 @@ duolingo_rs *can* currently:
 - more datapoint fetching
   - current language
   - current xp
-- clientside data crunching & comparison
+- <s>clientside data crunching & comparison</s> *out of scope for the lib at the time of writing*
 
 ## documentation
 [docs.rs](https://docs.rs/duolingo_rs/latest/duolingo_rs)
