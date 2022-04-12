@@ -79,6 +79,23 @@ pub async fn login(
     Ok(client.clone())
 }
 
+pub async fn fetch_manifest(user:String, client: &Client) -> Result<Value, Box<dyn Error>> {
+
+    let main_fetch_url = format!("https://duolingo.com/users/{}", &user);
+        let resp: String = client
+            .get(main_fetch_url)
+            //.headers(headers)
+            .send()
+            .await?
+            .text()
+            .await?;
+        println!("    done.\n");
+
+        // convert the json resp into a Value for easy map insertion
+        let user_val_r: Value = serde_json::from_str(&resp)?;
+        Ok(user_val_r)
+}
+
 //TODO:  impliment fetch_streak (fetch_Streak_map() but for single user)
 
 //
@@ -123,18 +140,8 @@ pub async fn fetch_streak_map(
     for user in users {
         println!("    fetching data for user {}", &user);
 
-        let main_fetch_url = format!("https://duolingo.com/users/{}", &user);
-        let resp: String = client
-            .get(main_fetch_url)
-            //.headers(headers)
-            .send()
-            .await?
-            .text()
-            .await?;
-        println!("    done.\n");
+        let user_val_r = fetch_manifest(user.clone(),&client).await?;
 
-        // convert the json resp into a Value for easy map insertion
-        let user_val_r: Value = serde_json::from_str(&resp)?;
         // grab the little fucker that we went through this process
         // for. 0/10 not worth the hassle, duolingo. i hope you push
         // a break to prod or something.
@@ -144,3 +151,4 @@ pub async fn fetch_streak_map(
     }
     Ok(user_map)
 }
+
